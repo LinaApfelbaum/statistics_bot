@@ -26,7 +26,7 @@ class StatisticsAPI:
                 "template_id": self.template_id,
                 "data": {
                     "name": name,
-                    "money": price
+                    "amount": price
                 }
             },
             headers=self._get_basic_headers(),

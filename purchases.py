@@ -1,5 +1,3 @@
-import os
-
 import requests
 
 from errors import ValidationError, UserError
