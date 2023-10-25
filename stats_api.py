@@ -17,7 +17,7 @@ class StatisticsAPI:
         self.app_password = app_password
         self._jwt_token = None
 
-    def send_data(self, price, name):
+    def send_data(self, price: float, name: str) -> None:
         auth_token = self._ensure_auth()
         response = requests.post(
             url=f"{self.api_url}/api/data/{self.template_id}/day-events",
@@ -38,7 +38,7 @@ class StatisticsAPI:
             raise UserError(
                 f"Purchase data has not been sent, code:{response.status_code}")
 
-    def _authorize(self):
+    def _authorize(self) -> str:
         response = requests.post(
             url=f"{self.api_url}/api/user/login_check",
             json={
@@ -53,7 +53,7 @@ class StatisticsAPI:
 
         return response.cookies.get("jwt")
 
-    def _ensure_auth(self):
+    def _ensure_auth(self) -> str:
         if self._jwt_token:
             decoded = jwt.decode(self._jwt_token, options={
                                  "verify_signature": False})
@@ -64,7 +64,7 @@ class StatisticsAPI:
 
         return self._jwt_token
 
-    def _get_basic_auth_token(self):
+    def _get_basic_auth_token(self) -> str:
         auth_data = f"{self.basic_username}:{self.basic_password}".encode(
             "ascii")
         base64_bytes = base64.b64encode(auth_data)
@@ -72,7 +72,7 @@ class StatisticsAPI:
 
         return base64_string
 
-    def _get_basic_headers(self):
+    def _get_basic_headers(self) -> dict:
         return {
             "Authorization": "Basic " + self._get_basic_auth_token(),
             "Content-Type": "application/json"

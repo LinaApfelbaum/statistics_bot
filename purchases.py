@@ -1,3 +1,5 @@
+import os
+
 import requests
 
 from errors import ValidationError, UserError
@@ -8,7 +10,7 @@ EXCHANGE_RATE_ERROR_MESSAGE = "Exchange rates are not available"
 RSD_TO_RUB_EXCHANGE_RATE_URL = "https://kurs.resenje.org/api/v1/currencies/rub/rates/today"
 
 
-def extract_data(chat_message):
+def extract_data(chat_message: str) -> tuple[float, str]:
     message = chat_message.split()
 
     try:
@@ -23,12 +25,12 @@ def extract_data(chat_message):
     return price, name
 
 
-def convert_to_rub(price_in_rsd):
+def convert_to_rub(price_in_rsd: float) -> float:
     return round(price_in_rsd / exchange_rate())
 
 
-@memoize(3600)
-def exchange_rate():
+@memoize(int(os.environ.get('CURRENCY_CACHE_TTL')))
+def exchange_rate() -> float:
     response = requests.get(RSD_TO_RUB_EXCHANGE_RATE_URL)
     if response.status_code != 200 or "exchange_middle" not in response.json():
         raise UserError(EXCHANGE_RATE_ERROR_MESSAGE)

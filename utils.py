@@ -1,7 +1,8 @@
 import time
+from typing import Callable
 
 
-def memoize(ttl):
+def memoize(ttl: int) -> Callable:
     cache = {}
 
     def time_wrapper(func):

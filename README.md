@@ -3,9 +3,8 @@
 ToDo:
 - tests for all code
 - add linter
-- add types
 - add logging
-- add ttl to config
+- get statistics for month, day, year
 
 #### run bot with auto restart
 

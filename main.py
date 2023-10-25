@@ -31,7 +31,8 @@ def receive_data(message):
     try:
         converted_price = convert_to_rub(price)
         statistics_api.send_data(converted_price, name)
-        bot.reply_to(message, "OK")
+        bot.reply_to(
+            message, f"Successfully sent. Amount in RUB: {converted_price}")
     except UserError as e:
         bot.reply_to(message, f"Data has not been sent to stats app: {e}")
 
