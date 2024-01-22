@@ -1,13 +1,13 @@
+from errors import UserError, ValidationError
+from stats_api import StatisticsAPI
+from purchases import extract_data, convert_to_rub
 import datetime
 import os
 import telebot
 from dotenv import load_dotenv
-
-from purchases import extract_data, convert_to_rub
-from stats_api import StatisticsAPI
-from errors import UserError, ValidationError
-
 load_dotenv()
+
+
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
 statistics_api = StatisticsAPI(
     os.environ.get('API_URL'),
@@ -17,6 +17,15 @@ statistics_api = StatisticsAPI(
     os.environ.get('APP_USERNAME'),
     os.environ.get('APP_PASSWORD')
 )
+
+
+@bot.message_handler(commands=['last'])
+def get_last_entries(message):
+    print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {message.text}")
+    try:
+        bot.reply_to(message, statistics_api.get_last_entries())
+    except UserError as e:
+        bot.reply_to(message, f"Command failed: {e}")
 
 
 @bot.message_handler(func=lambda msg: True)

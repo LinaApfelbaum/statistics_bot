@@ -6,6 +6,10 @@ ToDo:
 - add logging
 - get statistics for month, day, year
 
+#### add local environment variable
+
+`export CURRENCY_CACHE_TTL=3600`
+
 #### run bot with auto restart
 
 `nodemon --exec python3 main.py`

@@ -38,6 +38,26 @@ class StatisticsAPI:
             raise UserError(
                 f"Purchase data has not been sent, code:{response.status_code}")
 
+    def get_last_entries(self):
+        auth_token = self._ensure_auth()
+        response = requests.get(
+            url=f"{self.api_url}/api/data/{self.template_id}/day-events",
+            headers=self._get_basic_headers(),
+            cookies={
+                "jwt": auth_token
+            }
+        )
+        if response.status_code != 200:
+            raise UserError(
+                f"Last purchase data has not been received, code:{response.status_code}"
+            )
+
+        last_entries = ""
+        for i in range(len(response.json())):
+            last_entries += f'{response.json()[i]["data"]["name"]}: {response.json()[i]["data"]["amount"]}\n'
+
+        return last_entries.rstrip()
+
     def _authorize(self) -> str:
         response = requests.post(
             url=f"{self.api_url}/api/user/login_check",
