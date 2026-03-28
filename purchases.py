@@ -1,31 +1,41 @@
 import os
+from typing import Optional
 
 import requests
 
+from constants import SupportedCurrencies
 from errors import ValidationError, UserError
 from utils import memoize
 
-SUPPORTED_CURRENCIES = ["USD", "EUR", "RUB", "GBP", "RSD"]
-FORMAT_ERROR_MESSAGE = f"Purchase data entered wrong. Use mask: {{currency: {SUPPORTED_CURRENCIES}}} {{price: int}} {{purchase name: 3 chars at least}}"
+FORMAT_ERROR_MESSAGE = f"Purchase data entered wrong. Use mask: {{currency: {SupportedCurrencies.all()}}} {{price: int}} {{purchase name: 3 chars at least}}"
 EXCHANGE_RATE_ERROR_MESSAGE = "Exchange rates are not available"
 RSD_TO_RUB_EXCHANGE_RATE_URL = "https://kurs.resenje.org/api/v1/currencies/{currency}/rates/today"
 
 
-def extract_data(chat_message: str) -> tuple[str, float, str]:
+def extract_data(chat_message: str, default_currency: Optional[str] = None) -> tuple[str, float, str]:
     message = chat_message.split()
 
-    currency = "RSD"
-    if message[0].upper() in SUPPORTED_CURRENCIES:
+    if not message:
+        raise ValidationError(FORMAT_ERROR_MESSAGE)
+
+    currency = default_currency
+    if message[0].upper() in SupportedCurrencies.all():
         currency = message[0].upper()
         message.pop(0)
 
+    if currency is None:
+        raise ValidationError("Currency is required")
+
+    if not message:
+        raise ValidationError(FORMAT_ERROR_MESSAGE)
+
     try:
-        price = float(message[0])
+        price = float(message[0].replace(",", "."))
     except ValueError:
         raise ValidationError(FORMAT_ERROR_MESSAGE)
 
     name = " ".join(message[1:])
-    if len(name) < 3:
+    if len(name.strip()) < 3:
         raise ValidationError(FORMAT_ERROR_MESSAGE)
 
     return currency, price, name
