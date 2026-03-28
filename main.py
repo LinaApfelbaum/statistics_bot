@@ -32,16 +32,19 @@ def get_last_entries(message):
 def receive_data(message):
     print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {message.text}")
     try:
-        price, name = extract_data(message.text)
+        currency, price, name = extract_data(message.text)
     except ValidationError as e:
         bot.reply_to(message, f"Validation failed: {e}")
         return
 
     try:
-        converted_price = convert_to_rub(price)
-        statistics_api.send_data(converted_price, name)
+        if currency == "RUB":
+            converted_price = price
+        else:
+            converted_price = convert_to_rub(price, currency)
+        statistics_api.send_data(price, name, currency, converted_price)
         bot.reply_to(
-            message, f"Successfully sent. Amount in RUB: {converted_price}")
+            message, f"Successfully sent: {price} {currency}. Amount in RUB: {converted_price}")
     except UserError as e:
         bot.reply_to(message, f"Data has not been sent to stats app: {e}")
 

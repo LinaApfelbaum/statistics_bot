@@ -17,7 +17,7 @@ class StatisticsAPI:
         self.app_password = app_password
         self._jwt_token = None
 
-    def send_data(self, price: float, name: str) -> None:
+    def send_data(self, price: float, name: str, currency: str, computed_price: float) -> None:
         auth_token = self._ensure_auth()
         response = requests.post(
             url=f"{self.api_url}/api/data/{self.template_id}/day-events",
@@ -26,7 +26,9 @@ class StatisticsAPI:
                 "template_id": self.template_id,
                 "data": {
                     "name": name,
-                    "amount": price
+                    "amount": price,  # original price
+                    "currency": currency,
+                    "amount_rub": computed_price
                 }
             },
             headers=self._get_basic_headers(),

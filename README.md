@@ -6,6 +6,10 @@ ToDo:
 - add logging
 - get statistics for month, day, year
 
+#### activate venv
+
+`source ./venv/bin/activate`
+
 #### add local environment variable
 
 `export CURRENCY_CACHE_TTL=3600`
